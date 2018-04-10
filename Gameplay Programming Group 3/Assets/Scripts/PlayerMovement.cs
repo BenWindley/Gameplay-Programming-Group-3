@@ -12,7 +12,7 @@ public class PlayerMovement : MonoBehaviour
     private bool on_ground = false;
     private bool run = true;
     private bool head_on_roof = false;
-    private state current_state = state.GROUND;
+    public state current_state = state.GROUND;
 
     private float speed_limit = 1.0f;
     private float current_speed = 1.0f;
@@ -39,9 +39,9 @@ public class PlayerMovement : MonoBehaviour
     public float health = 0.0f;
     public float max_health = 10.0f;
 
-    public Attack lightAttackTargets;
+    public Attack attackTargets;
 
-    private enum state
+    public enum state
     {
         AIR,
         GROUND,
@@ -87,22 +87,35 @@ public class PlayerMovement : MonoBehaviour
 
     void HitLight()
     {
-        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraShake>().Shake(0.2f, 1.0f);
-
-        foreach (GameObject enemy in lightAttackTargets.enemies)
+        foreach (GameObject enemy in attackTargets.enemies)
         {
-            enemy.GetComponent<SlimeBehaviour>().TakeDamage(2.0f);
+            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraShake>().Shake(0.2f, 0.5f);
+
+            if ((enemy.GetComponent("SlimeBehaviour") as SlimeBehaviour) != null)
+            {
+                enemy.GetComponent<SlimeBehaviour>().TakeDamage(2.0f);
+            }
+            if ((enemy.GetComponent("Enemy") as Enemy) != null)
+            {
+                enemy.GetComponent<Enemy>().getHit(1.0f);
+            }
             return;
         }
     }
 
     void HitHeavy()
     {
-        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraShake>().Shake(0.2f, 2.0f);
-
-        foreach (GameObject enemy in lightAttackTargets.enemies)
+        foreach (GameObject enemy in attackTargets.enemies)
         {
-            enemy.GetComponent<SlimeBehaviour>().TakeDamage(4.0f);
+            if ((enemy.GetComponent("SlimeBehaviour") as SlimeBehaviour) != null)
+            {
+                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraShake>().Shake(0.2f, 1.0f);
+                enemy.GetComponent<SlimeBehaviour>().TakeDamage(4.0f);
+            }
+            if ((enemy.GetComponent("Enemy") as Enemy) != null)
+            {
+                enemy.GetComponent<Enemy>().getHit(2.0f);
+            }
         }
     }
 

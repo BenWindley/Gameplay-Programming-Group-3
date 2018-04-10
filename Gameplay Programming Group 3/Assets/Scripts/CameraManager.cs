@@ -53,6 +53,11 @@ public class CameraManager : MonoBehaviour
         default_combat_pos = combat_pos.position;
     }
 
+    public bool IsLockedOnto(GameObject enemy)
+    {
+        return Vector3.Distance(combat_target, enemy.transform.position) < 1.0f;
+    }
+
     void LateUpdate()
     {
         transform.position = player.transform.position;
@@ -67,13 +72,24 @@ public class CameraManager : MonoBehaviour
         {
             foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
             {
-                if (Vector3.Distance(player.transform.position, enemy.transform.position) < (camera_state == state.COMBAT ? 40 : 20) &&
+                if ((enemy.GetComponent("SlimeBehaviour") as SlimeBehaviour) != null)
+                {
+                    if (Vector3.Distance(player.transform.position, enemy.transform.position) < (camera_state == state.COMBAT ? 40 : 20) &&
                    enemy.GetComponent<SlimeBehaviour>().health > 0 &&
                    enemy.GetComponent<SlimeBehaviour>().size != SlimeBehaviour.SlimeType.Smolo &&
                    enemy.GetComponent<SlimeBehaviour>().canSeePlayer)
+                    {
+                        camera_state = state.COMBAT;
+                        combat_targets.Add(enemy.transform.position);
+                    }
+                }
+                if ((enemy.GetComponent("Enemy") as Enemy) != null)
                 {
-                    camera_state = state.COMBAT;
-                    combat_targets.Add(enemy.transform.position);
+                    if(Vector3.Distance(player.transform.position, enemy.transform.position) < (camera_state == state.COMBAT ? 40 : 20))
+                    {
+                        camera_state = state.COMBAT;
+                        combat_targets.Add(enemy.transform.position);
+                    }
                 }
             }
 
