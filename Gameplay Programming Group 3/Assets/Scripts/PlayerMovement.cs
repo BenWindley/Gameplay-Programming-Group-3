@@ -25,6 +25,8 @@ public class PlayerMovement : MonoBehaviour
     private bool double_jump = false;
     public float speed_boost = 0.0f;
 
+    public bool hasDoubleJumped = false;
+
     public ParticleSystem pickup_particle;
     public ParticleSystem pickup_current;
 
@@ -128,11 +130,6 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             double_jump = true;
-
-            if(!pickup_particle.isPlaying)
-                pickup_particle.Play();
-
-            pickup_current.Play();
 
             return true;
         }
@@ -255,6 +252,8 @@ public class PlayerMovement : MonoBehaviour
                 double_jump = false;
                 on_ground = false;
 
+                hasDoubleJumped = true;
+
                 player_animator.SetBool("Jump", true);
 
                 rigidbody_player.velocity = new Vector3(0, 0, 0);
@@ -280,6 +279,7 @@ public class PlayerMovement : MonoBehaviour
         if (on_ground)
         {
             player_animator.SetBool("Ground Hit", true);
+            hasDoubleJumped = false;
         }
         else
         {
