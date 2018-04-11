@@ -4,7 +4,14 @@ using UnityEngine;
 
 public class collectable : MonoBehaviour {
 
-	public int collectibleType;
+	[System.Serializable]
+	public enum collectType
+	{
+		speed_boost,
+		double_jump
+	};
+
+	public collectType pickup;
 
 	//public GameObject idleFx;
 	public GameObject explosionFx;
@@ -26,13 +33,13 @@ public class collectable : MonoBehaviour {
 		{
 			//GameObject.FindGameObjectWithTag ("Manager").GetComponent<collectibleManager> ().AddCollected (collectibleType);
 
-			switch (collectibleType)
+			switch (pickup)
 			{
-			case 0:
+			case collectType.speed_boost:
 				GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerMovement> ().speed_boost = 10;
 				break;
 
-			case 1:
+			case collectType.double_jump:
 				GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerMovement> ().DoubleJump();
 				break;
 
