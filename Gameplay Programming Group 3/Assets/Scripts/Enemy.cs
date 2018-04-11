@@ -74,12 +74,14 @@ public class Enemy : MonoBehaviour {
 	float jfxT;
     bool gap;
 
+	float stime;
+
 	//public int[] near;
 
 	// Use this for initialization
 	void Start () 
 	{
-		transform.localScale = new Vector3 (3f, 3f, 3f);
+		transform.localScale = new Vector3 (1.5f, 1.5f, 1.5f);
 
 		jumpFX = Instantiate (jumpFX);
 		jumpFX.transform.parent = gameObject.transform;
@@ -282,26 +284,28 @@ public class Enemy : MonoBehaviour {
 			if (dist < hit_range && grounded == true && gap == false) 
 			{
 				//attack player
-				if (!(player.GetComponent<PlayerMovement>().current_state == PlayerMovement.state.DEAD)) 
+				if (!(player.GetComponent<PlayerMovement>().current_state == PlayerMovement.state.DEAD) && stime == 0) 
 				{
+
+					stime = 1;
 					if (enemyPhase == 1)
 					{
-						player.GetComponent<PlayerMovement> ().TakeDamage(10);
+						player.GetComponent<PlayerMovement> ().TakeDamage(3);
 					} 
 					else if (enemyPhase == 2)
 					{
-                        player.GetComponent<PlayerMovement>().TakeDamage(6);
+                        player.GetComponent<PlayerMovement>().TakeDamage(2);
                     } 
 					else if (enemyPhase == 3)
 					{
                         //player.GetComponent<playerhealth> ().getHit (3, transform.position);
-                        player.GetComponent<PlayerMovement>().TakeDamage(3);
+                        player.GetComponent<PlayerMovement>().TakeDamage(1);
                     }
 
 					Vector3 dir = transform.position - player.transform.position;
 					dir.Normalize ();
 					//GetComponent<Rigidbody> ().velocity = new Vector3 (0, 0, 0);
-					GetComponent<Rigidbody> ().velocity = GetComponent<Rigidbody> ().velocity + dir * 3 + Vector3.up * (jumpForce / 5);
+					GetComponent<Rigidbody> ().velocity = GetComponent<Rigidbody> ().velocity + dir * 3.5f + Vector3.up * (jumpForce);
 
 					jumpFX.Play ();
 					bounceTime = 0;
@@ -313,6 +317,16 @@ public class Enemy : MonoBehaviour {
 		{
 			isChasing = false;
 			healthBar.GetComponent<Canvas>().enabled = false;
+		}
+
+		if (stime > 0)
+		{
+			stime -= Time.deltaTime;
+
+			if (stime <= 0) 
+			{
+				stime = 0;
+			}
 		}
 
 		//on death - depending on phase, split/instatiate accordingly
