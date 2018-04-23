@@ -51,7 +51,8 @@ public class SlimeBehaviour : MonoBehaviour
     {
         Grande,
         Largo,
-        Smolo
+        Smolo,
+        Kamikaze
     }
 
     public SlimeType size = SlimeType.Largo;
@@ -106,7 +107,7 @@ public class SlimeBehaviour : MonoBehaviour
             Vector3 dir = player.transform.position - transform.position;
             dir = new Vector3(-dir.x, 4.0f, -dir.z);
             GetComponent<Rigidbody>().velocity = Vector3.zero;
-            GetComponent<Rigidbody>().AddForce(dir.normalized * damage * 2, ForceMode.Impulse);
+            GetComponent<Rigidbody>().AddForce(dir.normalized * damage, ForceMode.Impulse);
         }
         else if (current_state != state.DIE)
         {
@@ -117,6 +118,13 @@ public class SlimeBehaviour : MonoBehaviour
 
             current_state = state.DIE;
             time_in_state = 0.0f;
+        }
+        else
+        {
+            Vector3 dir = player.transform.position - transform.position;
+            dir = new Vector3(-dir.x, 4.0f, -dir.z);
+            GetComponent<Rigidbody>().velocity = Vector3.zero;
+            GetComponent<Rigidbody>().AddForce(dir.normalized * damage * 2, ForceMode.Impulse);
         }
     }
 
@@ -197,7 +205,7 @@ public class SlimeBehaviour : MonoBehaviour
         grounded = Physics.Raycast(transform.position + new Vector3(0, 0.01f, 0), Vector3.down, 0.1f);
 
         current_state = StateCheck();
-
+        
         switch (current_state)
         {
             case state.IDLE:
@@ -264,6 +272,11 @@ public class SlimeBehaviour : MonoBehaviour
                         else
                         {
                             current_state = state.LIGHT_ATTACK;
+                        }
+
+                        if (size == SlimeType.Kamikaze)
+                        {
+                            current_state = state.DIE;
                         }
                     }
                     
