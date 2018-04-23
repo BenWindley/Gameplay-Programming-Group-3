@@ -33,6 +33,14 @@ public class SlimeBehaviour : MonoBehaviour
     [Range(0.0f, 10.0f)]
     public float heavyAttackCooldown = 5.0f;
 
+    [Header("Ranged Attack")]
+    [Range(0.0f, 200f)]
+    public float slimeRangedAttackRange = 2.0f;
+    [Range(0.0f, 5.0f)]
+    public float rangedAttackChargeTime = 1.0f;
+    [Range(0.0f, 10.0f)]
+    public float rangedAttackCooldown = 5.0f;
+
     private float attack_cooldown = 0.0f;
 
     [Header("Misc.")]
@@ -43,6 +51,8 @@ public class SlimeBehaviour : MonoBehaviour
     public float patrolRange = 5.0f;
     private Vector3 startPos;
     public int sideJumpChance = 3;
+
+    public float deathTime = 4.1f;
 
     public float maxHealth = 10.0f;
     public float health = 10.0f;
@@ -57,7 +67,8 @@ public class SlimeBehaviour : MonoBehaviour
 
     public SlimeType size = SlimeType.Largo;
 
-    public GameObject smallSlime;
+    public GameObject deathDrop;
+    public GameObject projectile;
 
     [Range(0.0f, 20.0f)]
     public float explosionRadius = 10.0f;
@@ -85,6 +96,7 @@ public class SlimeBehaviour : MonoBehaviour
         JUMP,
         LIGHT_ATTACK,
         HEAVY_ATTACK,
+        RANGED_ATTACK,
         DIE
     }
 
@@ -152,7 +164,6 @@ public class SlimeBehaviour : MonoBehaviour
         if (heavy_attack)
         {
             heavy_attack = false;
-
         }
     }
 
@@ -256,6 +267,14 @@ public class SlimeBehaviour : MonoBehaviour
                     {
                         transform.Translate(Vector3.forward * chaseSpeed * (-1 * Mathf.Cos(time_in_state * slimeMoveFrequency) + 1));
                     }
+                    
+                    if (Vector3.Distance(player.transform.position, transform.position) <= slimeRangedAttackRange && 
+                        player.GetComponent<PlayerMovement>().health > 0f)
+                    {
+                        time_in_state = 0.0f;
+                        current_state = state.RANGED_ATTACK;
+                        return;
+                    }
 
                     if (Vector3.Distance(player.transform.position, transform.position) <= attackRange)
                     {
@@ -264,7 +283,7 @@ public class SlimeBehaviour : MonoBehaviour
 
                         if (size == SlimeType.Grande)
                         {
-                            if (Random.Range(0, 3) != 0)
+                            if (Random.Range(0, 2) != 0)
                                 current_state = state.LIGHT_ATTACK;
                             else
                                 current_state = state.HEAVY_ATTACK;
@@ -328,6 +347,21 @@ public class SlimeBehaviour : MonoBehaviour
 
                     break;
                 }
+            case state.RANGED_ATTACK:
+                {
+                    time_in_state += Time.deltaTime;
+
+                    LookAt(player.transform.position, 0.03f);
+
+                    if (time_in_state > rangedAttackChargeTime && attack_cooldown == 0.0f && grounded)
+                    {
+                        attack_cooldown += rangedAttackCooldown;
+
+                        FireProjectileAtPlayer();
+                    }
+
+                    break;
+                }
             case state.DIE:
                 {
                     time_in_state += Time.deltaTime;
@@ -336,7 +370,7 @@ public class SlimeBehaviour : MonoBehaviour
 
                     mat.color = new Color(original_color.x + sin_a, original_color.y - 0.2f * sin_a, original_color.z - 0.2f * sin_a, mat.color.a);
 
-                    if (1 > time_in_state && time_in_state > 0)
+                    if ((deathTime / 4) > time_in_state && (time_in_state > 0))
                     {
                         for (int i = 0; i < transform.childCount; i++)
                         {
@@ -345,7 +379,7 @@ public class SlimeBehaviour : MonoBehaviour
                         }
                     }
 
-                    if (4 > time_in_state && time_in_state > 1)
+                    if (time_in_state > 0)
                     {
                         if (!fizz.isPlaying)
                         {
@@ -353,12 +387,12 @@ public class SlimeBehaviour : MonoBehaviour
                         }
                     }
 
-                    if (4 > time_in_state && time_in_state > 2)
+                    if ((deathTime - 0.1f) > time_in_state && time_in_state > (deathTime / 2))
                     {
                         transform.localScale *= 1.003f;
                     }
                     
-                    if (time_in_state > 4.1f)
+                    if (time_in_state > deathTime)
                     {
                         for (int i = 0; i < transform.childCount; i++)
                         {
@@ -387,8 +421,13 @@ public class SlimeBehaviour : MonoBehaviour
 
                         if(size == SlimeType.Largo || size == SlimeType.Grande)
                         {
-                            Instantiate(smallSlime, transform.GetChild(0).transform.position, transform.rotation);
-                            Instantiate(smallSlime, transform.GetChild(1).transform.position, transform.rotation);
+                            Instantiate(deathDrop, transform.GetChild(0).transform.position, transform.rotation);
+                            Instantiate(deathDrop, transform.GetChild(1).transform.position, transform.rotation);
+                        }
+                        if(size == SlimeType.Smolo || size == SlimeType.Kamikaze)
+                        {
+                            if(deathDrop != null)
+                                Instantiate(deathDrop, transform.GetChild(0).transform.position, transform.rotation);
                         }
 
                         Destroy(fizz.gameObject, 5.0f);
@@ -398,6 +437,18 @@ public class SlimeBehaviour : MonoBehaviour
                     break;
                 }
         }
+    }
+    
+    private void FireProjectileAtPlayer()
+    {
+        Vector3 dir = player.transform.position - transform.position;
+        
+        GameObject p = Instantiate(projectile, transform.position + transform.forward * 4 + transform.up, transform.rotation);
+
+        p.GetComponent<Rigidbody>().AddForce(dir.normalized * 20 + new Vector3(0, 0.2f * Vector3.Distance(player.transform.position, transform.position), 0), ForceMode.Impulse);
+        p.GetComponent<SlimeBehaviour>().current_state = state.DIE;
+
+        attack_cooldown = lightAttackCooldown;
     }
 
     public void LaunchAtPlayer()
@@ -431,6 +482,7 @@ public class SlimeBehaviour : MonoBehaviour
     private state StateCheck()
     {
         bool player_in_range = Vector3.Distance(player.transform.position, transform.position) <= slimeChaseRange;
+        bool player_in_ranged_range = Vector3.Distance(player.transform.position, transform.position) <= slimeRangedAttackRange;
 
         if (player.GetComponent<PlayerMovement>().health <= 0.0f)
         {
@@ -537,7 +589,6 @@ public class SlimeBehaviour : MonoBehaviour
                         }
                         else
                         {
-
                             time_in_state = 0.0f;
                             return state.PATROL;
                         }
