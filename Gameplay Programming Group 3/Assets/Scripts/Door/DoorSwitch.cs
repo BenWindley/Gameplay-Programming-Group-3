@@ -7,6 +7,7 @@ public class DoorSwitch : MonoBehaviour
     public GameObject door;
     public Transform desired_door_opening_posiion;
     private GameObject player;
+    public Animator camera_anim;
 
     public bool activated = false;
     private Transform button_end_position;
@@ -38,11 +39,12 @@ public class DoorSwitch : MonoBehaviour
             {
                 //Interacting with door
                 SetupCinematicCamera();
+                camera_anim.SetTrigger("Play");
             }
         }
     }
 
-    void SetupCinematicCamera()
+    void SetupCinematicCamera() // switches cameras
     {
         if (!IsInvoking("OpenDoor") && !IsInvoking("SwitchCameraBack"))
         {
@@ -62,12 +64,13 @@ public class DoorSwitch : MonoBehaviour
     {
         activated = true;
         door.GetComponent<Door>().open = true;
-        Invoke("SwitchCameraBack", 1.2f * (player.GetComponent<PlayerMovement>().speed_boost > 0 ? 1.5f : 1.0f));
+        Invoke("SwitchCameraBack", 2.5f * (player.GetComponent<PlayerMovement>().speed_boost > 0 ? 1.5f : 1.0f));
     }
 
     void SwitchCameraBack()
     {
         cinematic_camera.enabled = false;
         main_camera.enabled = true;
+        camera_anim.SetTrigger("Stop");
     }
 }
