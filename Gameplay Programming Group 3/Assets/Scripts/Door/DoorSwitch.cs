@@ -6,10 +6,9 @@ public class DoorSwitch : MonoBehaviour
 {
     public GameObject door;
     public Transform desired_door_opening_posiion;
-    private Vector3 button_end;
     private GameObject player;
 
-    private bool activated = false;
+    public bool activated = false;
     private Transform button_end_position;
 
     public Camera cinematic_camera;
@@ -19,23 +18,23 @@ public class DoorSwitch : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         main_camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
-
-        button_end = transform.position - new Vector3(0, 0, -0.1f);
+        cinematic_camera.enabled = false;
     }
 
     void OnTriggerStay(Collider col)
     {
+        Debug.Log("Player in Collider");
         if(col.tag == "Player")
         {
             float player_rotation = player.transform.rotation.eulerAngles.y;
             
             if ((player.GetComponent<Animator>().GetAnimatorTransitionInfo(0).IsName("Idle -> Attack") ||
                 (player.GetComponent<Animator>().GetAnimatorTransitionInfo(0).IsName("Locomotion -> Attack"))) &&
-               !activated &&
-               ((player_rotation >= 0 &&
-                player_rotation <= 45) ||
-               (player_rotation <= 360 &&
-                player_rotation >= 315)))
+               !activated/* &&
+               ((player_rotation >= 0 + transform.eulerAngles.y &&
+                player_rotation <= 45 + transform.eulerAngles.y) ||
+               (player_rotation <= 360 + transform.eulerAngles.y &&
+                player_rotation >= 315 + transform.eulerAngles.y))*/)
             {
                 //Interacting with door
                 SetupCinematicCamera();
@@ -62,7 +61,7 @@ public class DoorSwitch : MonoBehaviour
     void OpenDoor()
     {
         activated = true;
-
+        door.GetComponent<Door>().open = true;
         Invoke("SwitchCameraBack", 1.2f * (player.GetComponent<PlayerMovement>().speed_boost > 0 ? 1.5f : 1.0f));
     }
 
@@ -70,19 +69,5 @@ public class DoorSwitch : MonoBehaviour
     {
         cinematic_camera.enabled = false;
         main_camera.enabled = true;
-    }
-
-    void FixedUpdate()
-    {
-        if(activated)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, button_end, 0.02f);
-
-            if(transform.position.z == button_end.z)
-            {
-                transform.position = button_end;
-                door.GetComponent<Door>().open = true;
-            }
-        }
     }
 }
