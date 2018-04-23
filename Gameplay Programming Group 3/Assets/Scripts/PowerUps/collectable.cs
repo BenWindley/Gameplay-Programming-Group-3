@@ -8,13 +8,16 @@ public class collectable : MonoBehaviour {
 	public enum collectType
 	{
 		speed_boost,
-		double_jump
+		double_jump,
+        health
 	};
 
 	public collectType pickup;
 
 	//public GameObject idleFx;
 	public GameObject explosionFx;
+
+    public float health_increase;
 
 	// Use this for initialization
 	void Start () 
@@ -31,19 +34,28 @@ public class collectable : MonoBehaviour {
 	{
 		if (col.gameObject.tag == "Player")
 		{
-			//GameObject.FindGameObjectWithTag ("Manager").GetComponent<collectibleManager> ().AddCollected (collectibleType);
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
 
-			switch (pickup)
+            switch (pickup)
 			{
 			case collectType.speed_boost:
-				GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerMovement> ().speed_boost = 10;
-				break;
+                    //	GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerMovement> ().speed_boost = 10;
+                    p.GetComponent<PlayerMovement>().unlockBoost();
+                break;
 
 			case collectType.double_jump:
-				GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerMovement> ().DoubleJump();
-				break;
+                    //	GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerMovement> ().DoubleJump();
+                    p.GetComponent<PlayerMovement>().unlockDoubleJump();
+                break;
 
-			default:
+                case collectType.health:
+                    if (p.GetComponent<PlayerMovement>().health < p.GetComponent<PlayerMovement>().max_health)
+                    {
+                        p.GetComponent<PlayerMovement>().health += health_increase;
+                    }
+                    break;
+
+                default:
 				break;
 			}
 
