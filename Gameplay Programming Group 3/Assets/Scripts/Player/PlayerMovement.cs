@@ -45,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
 
     static public bool djump_unlocked = false;
     static public bool boost_unlocked = false;
+    float boost_cool_time = 0;
 
     public enum state
     {
@@ -450,9 +451,19 @@ public class PlayerMovement : MonoBehaviour
         float speed = Mathf.Sqrt(Input.GetAxis("Vertical") * Input.GetAxis("Vertical") + Input.GetAxis("Horizontal") * Input.GetAxis("Horizontal"));
 
         //boost
-        if (Input.GetButton("Boost"))
+        if (Input.GetButton("Boost") && speed_boost <= 0 && boost_cool_time <= 0)
         {
-            SpeedBoost();
+            if (boost_cool_time <= 0)
+            {
+                SpeedBoost();
+                boost_cool_time = 10;
+            }
+        }
+
+        //boost cool down
+        if(boost_cool_time > 0)
+        {
+            boost_cool_time -= Time.deltaTime;
         }
 
         if (in_spline)
