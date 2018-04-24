@@ -86,6 +86,9 @@ public class SlimeBehaviour : MonoBehaviour
     private Material mat;
     private Vector3 original_color;
 
+    private bool player_in_ranged_range;
+    bool player_in_range;
+
     public bool canSeePlayer = false;
 
     public enum state
@@ -268,7 +271,7 @@ public class SlimeBehaviour : MonoBehaviour
                         transform.Translate(Vector3.forward * chaseSpeed * (-1 * Mathf.Cos(time_in_state * slimeMoveFrequency) + 1));
                     }
                     
-                    if (Vector3.Distance(player.transform.position, transform.position) <= slimeRangedAttackRange && 
+                    if (player_in_ranged_range && 
                         player.GetComponent<PlayerMovement>().health > 0f)
                     {
                         time_in_state = 0.0f;
@@ -353,11 +356,25 @@ public class SlimeBehaviour : MonoBehaviour
 
                     LookAt(player.transform.position, 0.03f);
 
-                    if (time_in_state > rangedAttackChargeTime && attack_cooldown == 0.0f && grounded)
+                    if(!player_in_ranged_range)
+                    {
+                        if(player_in_range)
+                        {
+                            current_state = state.CHASE;
+                        }
+                        else
+                        {
+                            current_state = state.PATROL;
+                        }
+                    }
+
+                    if (time_in_state > rangedAttackChargeTime && grounded)
                     {
                         attack_cooldown += rangedAttackCooldown;
 
                         FireProjectileAtPlayer();
+
+                        time_in_state = 0;
                     }
 
                     break;
@@ -443,12 +460,12 @@ public class SlimeBehaviour : MonoBehaviour
     {
         Vector3 dir = player.transform.position - transform.position;
         
-        GameObject p = Instantiate(projectile, transform.position + transform.forward * 4 + transform.up, transform.rotation);
+        GameObject p = Instantiate(projectile, transform.position + transform.forward * 5 + transform.up, transform.rotation);
 
         p.GetComponent<Rigidbody>().AddForce(dir.normalized * 20 + new Vector3(0, 0.2f * Vector3.Distance(player.transform.position, transform.position), 0), ForceMode.Impulse);
         p.GetComponent<SlimeBehaviour>().current_state = state.DIE;
 
-        attack_cooldown = lightAttackCooldown;
+        attack_cooldown = rangedAttackCooldown;
     }
 
     public void LaunchAtPlayer()
@@ -481,8 +498,8 @@ public class SlimeBehaviour : MonoBehaviour
 
     private state StateCheck()
     {
-        bool player_in_range = Vector3.Distance(player.transform.position, transform.position) <= slimeChaseRange;
-        bool player_in_ranged_range = Vector3.Distance(player.transform.position, transform.position) <= slimeRangedAttackRange;
+        player_in_range = Vector3.Distance(player.transform.position, transform.position) <= slimeChaseRange;
+        player_in_ranged_range = Vector3.Distance(player.transform.position, transform.position) <= slimeRangedAttackRange && !player_in_range;
 
         if (player.GetComponent<PlayerMovement>().health <= 0.0f)
         {
@@ -507,6 +524,11 @@ public class SlimeBehaviour : MonoBehaviour
                 }
             case state.PATROL:
                 {
+                    if (player_in_ranged_range)
+                    {
+                        time_in_state = 0.0f;
+                        return state.RANGED_ATTACK;
+                    }
                     if (player_in_range && player.GetComponent<PlayerMovement>().health > 0f && canSeePlayer)
                     {
                         time_in_state = 0.0f;
@@ -558,7 +580,7 @@ public class SlimeBehaviour : MonoBehaviour
                             time_in_state = 0.0f;
                             return state.JUMP;
                         }
-                        if (player_in_range)
+                        else if (player_in_range)
                         {
                             time_in_state = 0.0f;
                             return state.CHASE;
