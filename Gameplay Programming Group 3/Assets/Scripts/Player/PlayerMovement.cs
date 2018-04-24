@@ -259,7 +259,7 @@ public class PlayerMovement : MonoBehaviour
 
     void AirJump()
     {
-        if(double_jump || djump_unlocked)
+        if(double_jump || djump_unlocked && !hasDoubleJumped)
         {
             if (Input.GetButtonDown("Jump"))
             {
