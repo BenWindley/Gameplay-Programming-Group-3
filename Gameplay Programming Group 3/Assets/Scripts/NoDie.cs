@@ -9,14 +9,12 @@ public class NoDie : MonoBehaviour
     [Range(-100f, 0f)]
     public float min_height = -5.0f;
 
-    // Use this for initialization
     void Start ()
     {
         start_position = transform.position;
 
     }
-	
-	// Update is called once per frame
+
 	void Update ()
     {
 		if(transform.position.y < min_height)
