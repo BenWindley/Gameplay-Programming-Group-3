@@ -13,45 +13,56 @@ public class SplineWalker : MonoBehaviour
 	private float progress;
 	private bool goingForward = true;
 
-	private void Update ()
+    public bool step_on_to_start = false;
+
+    void Start()
     {
-		if (goingForward)
+        Vector3 position = spline.GetPoint(progress);
+        transform.localPosition = position;
+    }
+    private void Update()
+    {
+        if (step_on_to_start == false)
         {
-			progress += Time.deltaTime / duration;
-
-			if (progress > 1f) {
-				if (mode == SplineWalkerMode.Once)
-                {
-					progress = 1f;
-				}
-				else if (mode == SplineWalkerMode.Loop)
-                {
-					progress -= 1f;
-				}
-				else
-                {
-					progress = 2f - progress;
-					goingForward = false;
-				}
-			}
-		}
-		else
-        {
-			progress -= Time.deltaTime / duration;
-
-			if (progress < 0f)
+            if (goingForward)
             {
-				progress = -progress;
-				goingForward = true;
-			}
-		}
+                progress += Time.deltaTime / duration;
 
-		Vector3 position = spline.GetPoint(progress);
-		transform.localPosition = position;
+                if (progress > 1f)
+                {
+                    if (mode == SplineWalkerMode.Once)
+                    {
+                        progress = 1f;
+                    }
+                    else if (mode == SplineWalkerMode.Loop)
+                    {
+                        progress -= 1f;
+                    }
+                    else
+                    {
+                        progress = 2f - progress;
+                        goingForward = false;
+                    }
+                }
+            }
+            else
+            {
+                progress -= Time.deltaTime / duration;
 
-		if (lookForward)
-        {
-			transform.LookAt(position + spline.GetDirection(progress));
-		}
-	}
+                if (progress < 0f)
+                {
+                    progress = -progress;
+                    goingForward = true;
+                }
+            }
+
+            Vector3 position = spline.GetPoint(progress);
+            transform.localPosition = position;
+
+            if (lookForward)
+            {
+                transform.LookAt(position + spline.GetDirection(progress));
+            }
+        }
+    }
 }
