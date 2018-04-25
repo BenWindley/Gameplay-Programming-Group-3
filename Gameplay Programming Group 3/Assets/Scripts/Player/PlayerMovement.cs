@@ -170,6 +170,11 @@ public class PlayerMovement : MonoBehaviour
             {
                 on_ground = true;
             }
+
+            if (col.collider.tag != "Enemy")
+            {
+                air_launch = Vector3.zero;
+            }
         }
     }
 

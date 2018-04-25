@@ -203,7 +203,10 @@ public class SlimeBehaviour : MonoBehaviour
 
     void FixedUpdate()
     {
-        Debug.DrawLine(transform.position, target);
+        Debug.DrawLine(transform.position + Vector3.up, target);
+        canSeePlayer = !Physics.Raycast(transform.position + new Vector3(0, 3f, 0), player.transform.position - transform.position, Vector3.Distance(transform.position, player.transform.position));
+        Debug.DrawRay(transform.position + new Vector3(0, 1f, 0), player.transform.position - transform.position);
+        grounded = Physics.Raycast(transform.position + new Vector3(0, 0.01f, 0), Vector3.down, 0.1f);
 
         if (attack_cooldown <= 0.0f)
         {
@@ -211,12 +214,17 @@ public class SlimeBehaviour : MonoBehaviour
         }
         else
         {
+            if (grounded)
+            {
+                current_state = state.CHASE;
+            }
+
+            transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, 0.2f);
             attack_cooldown -= Time.deltaTime;
+
+            return;
         }
 
-        canSeePlayer = !Physics.Raycast(transform.position + new Vector3(0, 1f, 0), player.transform.position - transform.position, Vector3.Distance(transform.position, player.transform.position));
-        Debug.DrawRay(transform.position + new Vector3(0, 1f, 0), player.transform.position - transform.position);
-        grounded = Physics.Raycast(transform.position + new Vector3(0, 0.01f, 0), Vector3.down, 0.1f);
 
         current_state = StateCheck();
         
@@ -253,7 +261,7 @@ public class SlimeBehaviour : MonoBehaviour
                         MakeNewTarget();
                     }
 
-                    if(Physics.Raycast(transform.position + new Vector3(0, 0.01f, 0), target - transform.position + new Vector3(0, 0.01f, 0), 100f))
+                    if(Physics.Raycast(transform.position + new Vector3(0, 1f, 0), target - transform.position + new Vector3(0, 1f, 0), 100f))
                     {
                         MakeNewTarget();
                     }
@@ -356,7 +364,9 @@ public class SlimeBehaviour : MonoBehaviour
 
                     LookAt(player.transform.position, 0.03f);
 
-                    if(!player_in_ranged_range)
+                    transform.localScale = new Vector3(1, Mathf.Lerp(transform.localScale.y, 0.75f, 0.02f), 1);
+
+                    if (!player_in_ranged_range)
                     {
                         if(player_in_range)
                         {
@@ -366,6 +376,10 @@ public class SlimeBehaviour : MonoBehaviour
                         {
                             current_state = state.PATROL;
                         }
+                    }
+                    else if (!canSeePlayer)
+                    {
+                        current_state = state.PATROL;
                     }
 
                     if (time_in_state > rangedAttackChargeTime && grounded)
@@ -409,7 +423,7 @@ public class SlimeBehaviour : MonoBehaviour
                         transform.localScale *= 1.003f;
                     }
                     
-                    if (time_in_state > deathTime)
+                    if (time_in_state > deathTime || (size == SlimeType.Kamikaze && Vector3.Distance(player.transform.position, transform.position) < attackRange))
                     {
                         for (int i = 0; i < transform.childCount; i++)
                         {
@@ -424,13 +438,16 @@ public class SlimeBehaviour : MonoBehaviour
                         {
                             if (col.tag == "Player")
                             {
-                                Vector3 dir = player.transform.position - transform.position;
-                                dir = new Vector3(dir.x, 1, dir.z).normalized;
+                                if (canSeePlayer)
+                                {
+                                    Vector3 dir = player.transform.position - transform.position;
+                                    dir = new Vector3(dir.x, 1, dir.z).normalized;
 
-                                col.GetComponent<PlayerMovement>().air_launch = dir * 3;
-                                col.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                                    col.GetComponent<PlayerMovement>().air_launch = dir * 3;
+                                    col.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
-                                col.GetComponent<PlayerMovement>().TakeDamage(explosionRadius - Vector3.Distance(transform.position, player.transform.position));
+                                    col.GetComponent<PlayerMovement>().TakeDamage(explosionRadius - Vector3.Distance(transform.position, player.transform.position));
+                                }
                             }
                         }
 
@@ -459,10 +476,14 @@ public class SlimeBehaviour : MonoBehaviour
     private void FireProjectileAtPlayer()
     {
         Vector3 dir = player.transform.position - transform.position;
+        dir += new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5));
         
         GameObject p = Instantiate(projectile, transform.position + transform.forward * 5 + transform.up, transform.rotation);
 
-        p.GetComponent<Rigidbody>().AddForce(dir.normalized * 20 + new Vector3(0, 0.2f * Vector3.Distance(player.transform.position, transform.position), 0), ForceMode.Impulse);
+        p.GetComponent<Rigidbody>().AddForce(dir.normalized * (30 + Random.Range(0, 5)) + 
+                                             new Vector3(0, 0.13f * Vector3.Distance(player.transform.position, transform.position), 0), 
+                                             ForceMode.Impulse);
+
         p.GetComponent<SlimeBehaviour>().current_state = state.DIE;
 
         attack_cooldown = rangedAttackCooldown;
