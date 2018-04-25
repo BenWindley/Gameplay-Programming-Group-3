@@ -76,6 +76,7 @@ public class CameraManager : MonoBehaviour
                 {
                     if (Vector3.Distance(player.transform.position, enemy.transform.position) < (camera_state == state.COMBAT ? 40 : 20) &&
                    enemy.GetComponent<SlimeBehaviour>().health > 0 &&
+                   enemy.GetComponent<SlimeBehaviour>().size != SlimeBehaviour.SlimeType.Kamikaze &&
                    enemy.GetComponent<SlimeBehaviour>().size != SlimeBehaviour.SlimeType.Smolo &&
                    enemy.GetComponent<SlimeBehaviour>().canSeePlayer)
                     {
@@ -286,8 +287,6 @@ public class CameraManager : MonoBehaviour
         {
             player_camera.transform.position = Vector3.Lerp(player_camera.transform.position, pos, lerp_speed * 2);
         }
-
-        //Debug.DrawRay(look_at_target.position, pos - look_at_target.position);
     }
 
     void RotateCheck()

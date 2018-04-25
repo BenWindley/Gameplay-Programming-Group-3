@@ -43,6 +43,9 @@ public class PlayerMovement : MonoBehaviour
 
     public Attack attackTargets;
 
+    static public bool djump_unlocked = false;
+    static public bool boost_unlocked = false;
+
     public enum state
     {
         AIR,
@@ -52,6 +55,16 @@ public class PlayerMovement : MonoBehaviour
         MENU,
         PAUSED,
         DEAD
+    }
+
+    public void unlockDoubleJump()
+    {
+        djump_unlocked = true;
+    }
+
+    public void unlockBoost()
+    {
+        boost_unlocked = true;
     }
 
     private void ResetScene()
@@ -245,7 +258,7 @@ public class PlayerMovement : MonoBehaviour
 
     void AirJump()
     {
-        if(double_jump)
+        if(double_jump || djump_unlocked)
         {
             if (Input.GetButtonDown("Jump"))
             {
@@ -435,8 +448,14 @@ public class PlayerMovement : MonoBehaviour
     void GroundMovement()
     {
         float speed = Mathf.Sqrt(Input.GetAxis("Vertical") * Input.GetAxis("Vertical") + Input.GetAxis("Horizontal") * Input.GetAxis("Horizontal"));
-        
-        if(in_spline)
+
+        //boost
+        if (Input.GetButton("Boost"))
+        {
+            SpeedBoost();
+        }
+
+        if (in_spline)
         {
             speed = Mathf.Abs(Input.GetAxis("Horizontal"));
         }
