@@ -248,12 +248,12 @@ public class SlimeBehaviour : MonoBehaviour
                     }
 
 
-                    if (Vector3.Distance(target, transform.position) <= 5f)
+                    if (Vector3.Distance(target, transform.position) <= 3f)
                     {
                         MakeNewTarget();
                     }
 
-                    if(Physics.Raycast(transform.position + new Vector3(0, 0.01f, 0), target - transform.position + new Vector3(0, 0.01f, 0), 100f))
+                    if(Physics.Raycast(transform.position + new Vector3(0, 1f, 0), target - transform.position + new Vector3(0, 1f, 0), 100f))
                     {
                         MakeNewTarget();
                     }
