@@ -15,22 +15,33 @@ public class fx2 : MonoBehaviour {
 		//ps = GetComponent<ParticleSystem> ();
 	//	ps.Stop ();
 		player = GameObject.FindGameObjectWithTag ("Player");
+		effect_timer = ps.duration;
 	}
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update ()
+	{
 
-		if (player.GetComponent<PlayerMovement>().hasDoubleJumped) 
+		if (player.GetComponent<PlayerMovement> ().hasDoubleJumped) 
 		{
 			//Debug.Log("Working");
 			ps.Play ();
-		}
-		else
+
+			timer += Time.deltaTime;
+		} 
+
+		if (timer > effect_timer) 
 		{
 			ps.Stop ();
+
+			if (!player.GetComponent<PlayerMovement> ().hasDoubleJumped) 
+			{
+				timer = 0;
+			}
+
+
 		}
 			
-    }
+	}
 }
 
