@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class NoDie : MonoBehaviour
 {
-    private Vector3 start_position;
+	public Vector3 start_position;
 
     [Range(-100f, 0f)]
     public float min_height = -5.0f;

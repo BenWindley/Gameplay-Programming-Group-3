@@ -278,9 +278,11 @@ public class Enemy : MonoBehaviour
                         player.GetComponent<PlayerMovement>().TakeDamage(1);
                     }
 
-                    Vector3 dir = transform.position - player.transform.position;
-                    dir.Normalize();
-                    GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity + dir * 3.5f + Vector3.up * (jumpForce);
+                    //  Vector3 dir = transform.position - player.transform.position;
+                    //  dir.Normalize();
+                    //  GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity + dir * 3.5f + Vector3.up * (jumpForce);
+
+                    player.GetComponent<PlayerMovement>().air_launch += transform.position - player.transform.position + Vector3.up;
 
                     jumpFX.Play();
                     bounceTime = 0;

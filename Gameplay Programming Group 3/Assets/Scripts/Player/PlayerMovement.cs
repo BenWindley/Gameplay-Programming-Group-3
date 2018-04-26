@@ -456,7 +456,7 @@ public class PlayerMovement : MonoBehaviour
         float speed = Mathf.Sqrt(Input.GetAxis("Vertical") * Input.GetAxis("Vertical") + Input.GetAxis("Horizontal") * Input.GetAxis("Horizontal"));
 
         //boost
-        if (Input.GetButton("Boost") && speed_boost <= 0 && boost_cool_time <= 0)
+		if (Input.GetButton("Boost") && speed_boost <= 0 && boost_cool_time <= 0 && boost_unlocked == true)
         {
             if (boost_cool_time <= 0)
             {
