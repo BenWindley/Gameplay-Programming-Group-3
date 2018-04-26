@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
 
     static public bool djump_unlocked = false;
     static public bool boost_unlocked = false;
-    float boost_cool_time = 0;
+    public float boost_cool_time = 0;
 
     public enum state
     {
@@ -67,6 +67,16 @@ public class PlayerMovement : MonoBehaviour
     {
         boost_unlocked = true;
     }
+
+	public bool isBoostUnlocked()
+	{
+		if (boost_unlocked == true)
+		{
+			return true;
+		}
+
+		return false;
+	}
 
     private void ResetScene()
     {
