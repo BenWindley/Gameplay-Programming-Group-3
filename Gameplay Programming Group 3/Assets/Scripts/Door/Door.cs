@@ -8,6 +8,12 @@ public class Door : MonoBehaviour
     private float open_rotation = 90;
     private float close_rotation = 0;
 	
+    void Start()
+    {
+        open_rotation += transform.rotation.eulerAngles.y;
+        close_rotation += transform.rotation.eulerAngles.y;
+    }
+
 	// Update is called once per frame
 	void FixedUpdate ()
     {
