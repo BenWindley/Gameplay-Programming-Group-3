@@ -9,6 +9,7 @@ public class SplinePlatform : MonoBehaviour
     [Range(0, 2)]
     public float inertia_multiplier = 1.0f;
 
+    private bool was_player_activated = false;
     public bool player_activated = true;
     public bool moves_player = true;
 
@@ -26,6 +27,7 @@ public class SplinePlatform : MonoBehaviour
 
         previous_pos = transform.position;
         start_pos = transform.position;
+        was_player_activated = GetComponent<SplineWalker>().step_on_to_start;
     }
     
     public void LaunchPlayer()
@@ -48,17 +50,23 @@ public class SplinePlatform : MonoBehaviour
 
     private void OnCollisionEnter(Collision col)
     {
-        if(col.gameObject == player)
+        if (was_player_activated)
         {
-            GetComponent<SplineWalker>().step_on_to_start = false;
+            if (col.gameObject == player)
+            {
+                GetComponent<SplineWalker>().step_on_to_start = false;
+            }
         }
     }
 
     private void OnCollisionExit(Collision col)
     {
-        if (col.gameObject == player)
+        if (was_player_activated)
         {
-            GetComponent<SplineWalker>().step_on_to_start = true;
+            if (col.gameObject == player)
+            {
+                GetComponent<SplineWalker>().step_on_to_start = true;
+            }
         }
     }
 }
