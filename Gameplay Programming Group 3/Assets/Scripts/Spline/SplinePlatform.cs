@@ -43,4 +43,12 @@ public class SplinePlatform : MonoBehaviour
 
         previous_pos = transform.position;
     }
+
+    private void OnCollisionEnter(Collision col)
+    {
+        if(col.gameObject == player)
+        {
+            GetComponent<SplineWalker>().step_on_to_start = false;
+        }
+    }
 }
