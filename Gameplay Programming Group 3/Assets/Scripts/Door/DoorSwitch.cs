@@ -24,7 +24,6 @@ public class DoorSwitch : MonoBehaviour
 
     void OnTriggerStay(Collider col)
     {
-        Debug.Log("Player in Collider");
         if(col.tag == "Player")
         {
             float player_rotation = player.transform.rotation.eulerAngles.y;
