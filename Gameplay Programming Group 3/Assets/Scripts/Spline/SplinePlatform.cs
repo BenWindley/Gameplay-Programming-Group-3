@@ -12,6 +12,7 @@ public class SplinePlatform : MonoBehaviour
     public bool player_activated = true;
     public bool moves_player = true;
 
+    private Vector3 start_pos;
     private Vector3 change;
     private Vector3 previous_pos;
     private GameObject player;
@@ -24,6 +25,7 @@ public class SplinePlatform : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
 
         previous_pos = transform.position;
+        start_pos = transform.position;
     }
     
     public void LaunchPlayer()
@@ -49,6 +51,14 @@ public class SplinePlatform : MonoBehaviour
         if(col.gameObject == player)
         {
             GetComponent<SplineWalker>().step_on_to_start = false;
+        }
+    }
+
+    private void OnCollisionExit(Collision col)
+    {
+        if (col.gameObject == player)
+        {
+            GetComponent<SplineWalker>().step_on_to_start = true;
         }
     }
 }

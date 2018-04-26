@@ -268,7 +268,7 @@ public class SlimeBehaviour : MonoBehaviour
                         MakeNewTarget();
                     }
 
-                    LookAt(target,0.01f);
+                    LookAt(target,0.1f);
                     break;
                 }
             case state.CHASE:
@@ -480,7 +480,7 @@ public class SlimeBehaviour : MonoBehaviour
         Vector3 dir = player.transform.position - transform.position;
         dir += new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5));
         
-        GameObject p = Instantiate(projectile, transform.position + transform.forward * 5 + transform.up, transform.rotation);
+        GameObject p = Instantiate(projectile, transform.position + transform.forward * 5 + transform.up * 3, transform.rotation);
 
         p.GetComponent<Rigidbody>().AddForce(dir.normalized * (30 + Random.Range(0, 5)) + 
                                              new Vector3(0, 0.13f * Vector3.Distance(player.transform.position, transform.position), 0), 

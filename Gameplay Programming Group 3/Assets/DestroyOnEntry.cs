@@ -6,9 +6,13 @@ public class DestroyOnEntry : MonoBehaviour
 {
     public GameObject destroy_this_object;
     public List<GameObject> move_objects;
+    public List<Transform> spawnPoints;
     public float target_wall_height = 5.0f;
 
     private bool entered = false;
+    private bool animation_finished = false;
+
+    public GameObject slime_to_spawn;
 
 	void OnTriggerEnter(Collider col)
     {
@@ -31,8 +35,20 @@ public class DestroyOnEntry : MonoBehaviour
                 }
                 else
                 {
+                    if (!animation_finished)
+                    {
+                        animation_finished = true;
+                        break;
+                    }
                     Destroy(gameObject);
                 }
+            }
+        }
+        foreach (Transform point in spawnPoints)
+        {
+            if (animation_finished)
+            {
+                Instantiate(slime_to_spawn, point);
             }
         }
     }

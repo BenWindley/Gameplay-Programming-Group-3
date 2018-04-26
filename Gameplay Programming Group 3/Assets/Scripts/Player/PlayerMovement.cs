@@ -256,10 +256,6 @@ public class PlayerMovement : MonoBehaviour
         {
             health += Time.deltaTime * 0.2f;
         }
-        else
-        {
-            health = max_health / 2;
-        }
     }
 
     void AirJump()
