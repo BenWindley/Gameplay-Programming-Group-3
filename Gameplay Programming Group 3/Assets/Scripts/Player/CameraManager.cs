@@ -15,6 +15,7 @@ public class CameraManager : MonoBehaviour
 
     public state camera_state = state.OUTSIDE;
 
+    public bool lockOnEnabled = false;
     public float lerp_speed = 0.1f;
 
     public Transform outside_pos;
@@ -39,7 +40,7 @@ public class CameraManager : MonoBehaviour
     public float target_rotation = 0.0f;
 
     private bool inside = false;
-    private bool lock_on_mode = true;
+    private bool lock_on_mode = false;
 
     public GameObject player_camera;
     private GameObject player;
@@ -64,11 +65,12 @@ public class CameraManager : MonoBehaviour
         
         combat_targets.Clear();
 
-        if (Input.GetButtonDown("LockOn"))
+
+        if (Input.GetButtonDown("LockOn") && lockOnEnabled)
             lock_on_mode = !lock_on_mode;
 
         
-        if (lock_on_mode)
+        if (lock_on_mode && lockOnEnabled)
         {
             foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
             {

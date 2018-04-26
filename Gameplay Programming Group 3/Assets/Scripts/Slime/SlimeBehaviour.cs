@@ -72,6 +72,7 @@ public class SlimeBehaviour : MonoBehaviour
 
     [Range(0.0f, 20.0f)]
     public float explosionRadius = 10.0f;
+    public float explosion_damage = 3.0f;
 
     private bool grounded = true;
     private bool attack_complete = true;
@@ -208,6 +209,8 @@ public class SlimeBehaviour : MonoBehaviour
         Debug.DrawRay(transform.position + new Vector3(0, 1f, 0), player.transform.position - transform.position);
         grounded = Physics.Raycast(transform.position + new Vector3(0, 0.01f, 0), Vector3.down, 0.1f);
 
+        transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, 0.2f);
+
         if (attack_cooldown <= 0.0f)
         {
             attack_cooldown = 0.0f;
@@ -218,8 +221,7 @@ public class SlimeBehaviour : MonoBehaviour
             {
                 current_state = state.CHASE;
             }
-
-            transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, 0.2f);
+            
             attack_cooldown -= Time.deltaTime;
 
             return;
@@ -446,7 +448,7 @@ public class SlimeBehaviour : MonoBehaviour
                                     col.GetComponent<PlayerMovement>().air_launch = dir * 3;
                                     col.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
-                                    col.GetComponent<PlayerMovement>().TakeDamage(explosionRadius - Vector3.Distance(transform.position, player.transform.position));
+                                    col.GetComponent<PlayerMovement>().TakeDamage(explosion_damage * (explosionRadius - Vector3.Distance(transform.position, player.transform.position)));
                                 }
                             }
                         }
