@@ -63,8 +63,6 @@ public class collectable : MonoBehaviour {
 			{
 				Instantiate (explosionFx, transform.position, transform.rotation);
 			}
-
-            Debug.Log("POWERUPPED");
 			Destroy (this.gameObject);
 		}
 	}

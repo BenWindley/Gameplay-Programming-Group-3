@@ -86,7 +86,8 @@ public class CameraManager : MonoBehaviour
                 }
                 if ((enemy.GetComponent("Enemy") as Enemy) != null)
                 {
-                    if(Vector3.Distance(player.transform.position, enemy.transform.position) < (camera_state == state.COMBAT ? 40 : 20))
+                    if(Vector3.Distance(player.transform.position, enemy.transform.position) < (camera_state == state.COMBAT ? 40 : 20) &&
+                       enemy.GetComponent<Enemy>().enemyPhase != 3)
                     {
                         camera_state = state.COMBAT;
                         combat_targets.Add(enemy.transform.position);

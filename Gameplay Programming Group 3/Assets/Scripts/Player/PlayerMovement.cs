@@ -252,13 +252,13 @@ public class PlayerMovement : MonoBehaviour
                 break;
         }
 
-        if (health < max_health)
+        if (health < max_health / 2)
         {
             health += Time.deltaTime * 0.2f;
         }
         else
         {
-            health = max_health;
+            health = max_health / 2;
         }
     }
 
