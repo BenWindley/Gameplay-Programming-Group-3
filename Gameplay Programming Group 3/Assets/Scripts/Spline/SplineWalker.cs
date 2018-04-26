@@ -15,14 +15,17 @@ public class SplineWalker : MonoBehaviour
 
     public bool step_on_to_start = false;
 
+    private bool initial_step = false;
+
     void Start()
     {
-        Vector3 position = spline.GetPoint(progress);
-        transform.localPosition = position;
+        transform.localPosition = spline.GetPoint(progress);
+
+        initial_step = step_on_to_start;
     }
     private void Update()
     {
-        if (step_on_to_start == false)
+        if (!step_on_to_start)
         {
             if (goingForward)
             {
