@@ -10,6 +10,7 @@ public class SplinePlatform : MonoBehaviour
     public float inertia_multiplier = 1.0f;
 
     public bool player_activated = true;
+    public bool moves_player = true;
 
     private Vector3 change;
     private Vector3 previous_pos;
@@ -35,7 +36,7 @@ public class SplinePlatform : MonoBehaviour
     {
         change = platform.transform.position - previous_pos;
 
-        if (player_on_platform)
+        if (player_on_platform && moves_player)
         {
             player.transform.position += change;
         }
