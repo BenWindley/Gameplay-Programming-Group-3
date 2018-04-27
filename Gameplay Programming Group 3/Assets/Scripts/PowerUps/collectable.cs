@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class collectable : MonoBehaviour {
-
+public class collectable : MonoBehaviour
+{
 	[System.Serializable]
 	public enum collectType
 	{
 		speed_boost,
 		double_jump,
-        health
+        health,
+        coin
 	};
 
 	public collectType pickup;
@@ -37,16 +38,16 @@ public class collectable : MonoBehaviour {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
 
             switch (pickup)
-			{
-			case collectType.speed_boost:
+            {
+                case collectType.speed_boost:
                     //	GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerMovement> ().speed_boost = 10;
                     p.GetComponent<PlayerMovement>().unlockBoost();
-                break;
+                    break;
 
-			case collectType.double_jump:
+                case collectType.double_jump:
                     //	GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerMovement> ().DoubleJump();
                     p.GetComponent<PlayerMovement>().unlockDoubleJump();
-                break;
+                    break;
 
                 case collectType.health:
                     if (p.GetComponent<PlayerMovement>().health < p.GetComponent<PlayerMovement>().max_health)
@@ -55,9 +56,10 @@ public class collectable : MonoBehaviour {
                     }
                     break;
 
-                default:
-				break;
-			}
+                case collectType.coin:
+                    p.GetComponent<PlayerMovement>().addCoin();
+                    break;
+            }
 
 			if (explosionFx)
 			{

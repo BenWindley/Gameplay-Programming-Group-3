@@ -45,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
 
     static public bool djump_unlocked = false;
     static public bool boost_unlocked = false;
+    static public int coin_count = 0;
     public float boost_cool_time = 0;
 
     public enum state
@@ -56,6 +57,16 @@ public class PlayerMovement : MonoBehaviour
         MENU,
         PAUSED,
         DEAD
+    }
+
+    public void addCoin()
+    {
+        ++coin_count;
+    }
+
+    public int getCoinCount()
+    {
+        return coin_count;
     }
 
     public void unlockDoubleJump()

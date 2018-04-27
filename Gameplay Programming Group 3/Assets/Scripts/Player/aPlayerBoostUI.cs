@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class aPlayerBoostUI : MonoBehaviour {
+public class aPlayerBoostUI : MonoBehaviour
+{
 
 	public Slider boostBar;
 	GameObject player;
@@ -12,31 +13,29 @@ public class aPlayerBoostUI : MonoBehaviour {
 	Vector3 startPos;
 
 	// Use this for initialization
-	void Start () {
-
+	void Start ()
+    {
 		startPos = boostBar.transform.position;
 		player = GameObject.FindGameObjectWithTag("Player");
 		boostBar.value = 5;
 
 		barcolor = fill.color;
-
 	}
 	
 	// Update is called once per frame
-	void Update () {
-
-
-		if (player.GetComponent<PlayerMovement> ().isBoostUnlocked () == true)
+	void Update ()
+    {
+		if (player.GetComponent<PlayerMovement>().isBoostUnlocked ())
 		{
 			boostBar.transform.position = startPos;
 
-			if (player.GetComponent<PlayerMovement> ().speed_boost <= 0)
+			if (player.GetComponent<PlayerMovement>().speed_boost <= 0)
 			{
 				//boostBar.value = 5;
-				boostBar.value = 0 + 5 - player.GetComponent<PlayerMovement> ().boost_cool_time;
+				boostBar.value = 0 + 5 - player.GetComponent<PlayerMovement>().boost_cool_time;
 				fill.color= Color.gray;
 
-				if (player.GetComponent<PlayerMovement> ().boost_cool_time == 0)
+				if (player.GetComponent<PlayerMovement>().boost_cool_time <= 0)
 				{
 					fill.color = barcolor;
 				}
@@ -44,7 +43,7 @@ public class aPlayerBoostUI : MonoBehaviour {
 			}
 			else
 			{
-				boostBar.value =  player.GetComponent<PlayerMovement> ().speed_boost;
+				boostBar.value =  player.GetComponent<PlayerMovement>().speed_boost;
 				fill.color = barcolor;
 			}
 
